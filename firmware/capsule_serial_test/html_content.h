@@ -30,7 +30,7 @@ a{color:#7cf}button{font:inherit;padding:6px 10px;border-radius:6px;border:1px s
 <div class="c"><span>battery</span><b id="bt">-</b></div>
 <div class="c"><span>SD card free</span><b id="sd">-</b></div>
 </div>
-<p><a href="/log" download="lightdx_log.csv">Download data (CSV)</a> &nbsp; <button id="clk" type="button">Set device clock from this phone</button> <span id="clkmsg"></span></p>
+<p>Download: <a href="/log">today (CSV)</a> <span id="days"></span><br> <button id="clk" type="button">Set device clock from this phone</button> <span id="clkmsg"></span></p>
 <div id="st">connecting...</div>
 <script>
 const NM=[415,445,480,515,555,590,630,680], COL=["#7a2cff","#3b4bff","#00b7ff","#00d46a","#9be000","#ffc400","#ff5a00","#d40000"];
@@ -73,6 +73,11 @@ async function recCmd(q){
 }
 document.getElementById('go').onclick=()=>recCmd('cmd=start&t='+encodeURIComponent(nowStr()));
 document.getElementById('stp').onclick=()=>recCmd('cmd=stop');
+fetch('/files',{cache:'no-store'}).then(r=>r.text()).then(tx=>{
+  const e=document.getElementById('days');
+  tx.trim().split('\n').filter(l=>l).sort().reverse().slice(0,14).forEach(l=>{
+    const [d,sz]=l.split(',');const a=document.createElement('a');a.href='/log?d='+d;a.textContent=d;a.title=Math.round(sz/1024)+' kB';
+    e.appendChild(document.createTextNode(' | '));e.appendChild(a)})}).catch(()=>{});
 document.getElementById('clk').onclick=async()=>{
   const n=new Date(),p=v=>String(v).padStart(2,'0');
   const t=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())+' '+p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());

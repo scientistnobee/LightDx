@@ -102,14 +102,14 @@ static void webTask(void *)
 }
 
 // ---- SD logging (Capsule v1.1 SD: CS G11, MOSI G12, MISO G39, SCK G14) ----
-// Serial command 'd' dumps the log, 'e' erases it; the web page also serves it at /log.
+// One log file per day: /lightdx_YYYY-MM-DD.csv. Serial: 'd' dumps today's file, 'D YYYY-MM-DD' another day, 'e' erases today's;
+// the web page serves /log?d=YYYY-MM-DD (default today) and lists the days at /files.
 #include <SPI.h>
 #include <SD.h>
 #define SD_CS 11
 #define SD_MOSI 12
 #define SD_MISO 39
 #define SD_SCK 14
-#define LOG_FILE "/lightdx_log.csv"
 SPIClass sdSPI(FSPI);
 static bool sdOk = false;
 static SemaphoreHandle_t sdMutex;
@@ -260,6 +260,31 @@ static void rtcString(char *buf, size_t n)
         snprintf(buf, n, "NOTSET");
 }
 
+// Daily log file name from a date "YYYY-MM-DD", or from the RTC date ("NOTSET" if the clock is not valid). buf >= 32 bytes.
+static void logPathFor(char *buf, size_t n, const char *date)
+{
+    snprintf(buf, n, "/lightdx_%.10s.csv", date);
+}
+static void logPathToday(char *buf, size_t n)
+{
+    char dt[24];
+    rtcString(dt, sizeof(dt));
+    if (dt[0] == 'N')
+        snprintf(buf, n, "/lightdx_NOTSET.csv");
+    else
+        logPathFor(buf, n, dt);
+}
+// True for "YYYY-MM-DD" (digits and dashes only, so it is safe in a file name).
+static bool validDate(const String &d)
+{
+    if (d.length() != 10)
+        return false;
+    for (int i = 0; i < 10; i++)
+        if (i == 4 || i == 7 ? d[i] != '-' : !isdigit((unsigned char)d[i]))
+            return false;
+    return true;
+}
+
 // Seconds since 1970-01-01 of the RTC's local time (no time zone handling; only differences are used). 0 = RTC invalid.
 static uint32_t rtcEpoch()
 {
@@ -303,23 +328,25 @@ static String logHeader()
     return h;
 }
 
-// A log with a different header (older firmware) is kept as /lightdx_log_prevN.csv instead of being mixed in or deleted.
-static void sdArchiveOldFormat()
+// A day file with a different header (older firmware) is kept as /lightdx_YYYY-MM-DD_prevN.csv instead of being mixed in or deleted.
+static void sdArchiveOldFormat(const char *path)
 {
-    if (!sdOk || !SD.exists(LOG_FILE))
+    if (!sdOk || !SD.exists(path))
         return;
-    File old = SD.open(LOG_FILE, FILE_READ);
+    File old = SD.open(path, FILE_READ);
     String first = old.readStringUntil('\n');
     old.close();
     first.trim();
     if (first == logHeader())
         return;
+    String base = String(path);
+    base.remove(base.length() - 4); // strip ".csv"
     for (int n = 1; n < 100; n++)
     {
-        String name = "/lightdx_log_prev" + String(n) + ".csv";
+        String name = base + "_prev" + String(n) + ".csv";
         if (!SD.exists(name))
         {
-            SD.rename(LOG_FILE, name);
+            SD.rename(path, name);
             Serial.println("SD: old-format log kept as " + name);
             return;
         }
@@ -330,9 +357,17 @@ static void logRow(const char *row)
 {
     if (!sdOk)
         return;
+    char path[40];
+    logPathToday(path, sizeof(path));
+    static String checkedPath; // header check once per day file
     xSemaphoreTake(sdMutex, portMAX_DELAY);
-    bool isNew = !SD.exists(LOG_FILE);
-    File f = SD.open(LOG_FILE, FILE_APPEND);
+    if (checkedPath != path)
+    {
+        sdArchiveOldFormat(path);
+        checkedPath = path;
+    }
+    bool isNew = !SD.exists(path);
+    File f = SD.open(path, FILE_APPEND);
     if (f)
     {
         if (isNew)
@@ -348,15 +383,15 @@ static void logRow(const char *row)
     xSemaphoreGive(sdMutex);
 }
 
-static void dumpLog()
+static void dumpLog(const char *path)
 {
     xSemaphoreTake(sdMutex, portMAX_DELAY);
-    File f = SD.open(LOG_FILE, FILE_READ);
+    File f = SD.open(path, FILE_READ);
     if (!f)
         Serial.println("SD: no log file");
     else
     {
-        Serial.printf("----- %s (%u bytes) -----\n", LOG_FILE, (unsigned)f.size());
+        Serial.printf("----- %s (%u bytes) -----\n", path, (unsigned)f.size());
         while (f.available())
             Serial.write(f.read());
         Serial.println("----- end -----");
@@ -529,17 +564,41 @@ static void startLive()
     });
     server.on("/log", [touch]() {
         touch();
+        char path[40];
+        if (server.hasArg("d") && validDate(server.arg("d")))
+            logPathFor(path, sizeof(path), server.arg("d").c_str());
+        else
+            logPathToday(path, sizeof(path));
         xSemaphoreTake(sdMutex, portMAX_DELAY);
-        File f = sdOk ? SD.open(LOG_FILE, FILE_READ) : File();
+        File f = sdOk ? SD.open(path, FILE_READ) : File();
         if (!f)
-            server.send(404, "text/plain", "no log");
+            server.send(404, "text/plain", "no log for that day");
         else
         {
-            server.sendHeader("Content-Disposition", "attachment; filename=lightdx_log.csv");
+            server.sendHeader("Content-Disposition", String("attachment; filename=") + (path + 1));
             server.streamFile(f, "text/csv");
             f.close();
         }
         xSemaphoreGive(sdMutex);
+    });
+    // Day files on the SD card, one "YYYY-MM-DD,bytes" per line.
+    server.on("/files", [touch]() {
+        touch();
+        String out;
+        xSemaphoreTake(sdMutex, portMAX_DELAY);
+        if (sdOk)
+        {
+            File root = SD.open("/");
+            for (File f = root.openNextFile(); f; f = root.openNextFile())
+            {
+                String nm = f.name();
+                if (nm.startsWith("lightdx_") && nm.length() == 22 && nm.endsWith(".csv") && validDate(nm.substring(8, 18)))
+                    out += nm.substring(8, 18) + "," + String((unsigned)f.size()) + "\n";
+            }
+        }
+        xSemaphoreGive(sdMutex);
+        server.sendHeader("Cache-Control", "no-store");
+        server.send(200, "text/plain", out);
     });
     // "t" = phone time "YYYY-MM-DD HH:MM:SS"; returns true and fills pendingClock if valid.
     auto parseTime = []() -> bool {
@@ -592,6 +651,8 @@ static void startLive()
 
 void setup()
 {
+    pinMode(BUZZER_PIN, OUTPUT); // first thing: hold the buzzer pin low so it does not chirp on every wake
+    digitalWrite(BUZZER_PIN, LOW);
     auto m5cfg = M5.config();
     m5cfg.internal_spk = false; // we do not use the buzzer or mic; leave G2 and the mic pins alone
     m5cfg.internal_mic = false;
@@ -674,7 +735,6 @@ void setup()
     sdMutex = xSemaphoreCreateMutex();
     sdSPI.begin(SD_SCK, SD_MISO, SD_MOSI, SD_CS);
     sdOk = SD.begin(SD_CS, sdSPI, 20000000);
-    sdArchiveOldFormat();
     if (sdOk)
     {
         sdUpdateSpace();
@@ -768,7 +828,24 @@ void loop()
         lastActivityMs = millis();
         int c = Serial.read();
         if (c == 'd')
-            dumpLog();
+        {
+            char path[40];
+            logPathToday(path, sizeof(path));
+            dumpLog(path);
+        }
+        else if (c == 'D') // D YYYY-MM-DD: dump another day
+        {
+            String d = Serial.readStringUntil('\n');
+            d.trim();
+            char path[40];
+            if (validDate(d))
+            {
+                logPathFor(path, sizeof(path), d.c_str());
+                dumpLog(path);
+            }
+            else
+                Serial.println("Usage: D YYYY-MM-DD");
+        }
         else if (c == 'b') // test helper: start a session from the serial port (uses the RTC as it is)
             pendingCmd = 1;
         else if (c == 'x') // test helper: stop the session
@@ -798,10 +875,12 @@ void loop()
         }
         else if (c == 'e' && sdOk)
         {
+            char path[40];
+            logPathToday(path, sizeof(path));
             xSemaphoreTake(sdMutex, portMAX_DELAY);
-            SD.remove(LOG_FILE);
+            SD.remove(path);
             xSemaphoreGive(sdMutex);
-            Serial.println("SD: log erased");
+            Serial.printf("SD: %s erased\n", path);
         }
     }
 

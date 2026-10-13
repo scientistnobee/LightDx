@@ -559,3 +559,10 @@ Firmware: `firmware/capsule_serial_test/` (working tree, branch `step2-wip`; Git
 - Capsule 1 (COM8, USB powered, flashed with the 40 s test build) is recording session 3 (started 15:25). It auto-stops at ~03:25 (`auto_12h`), then stays awake in live mode. Do not open its serial port.
 - Tomorrow: download the log (reset the board, `python -I sess.py COM8 22 "14:d"` style), check the 12 h run (gaps, batt curve, auto_12h row); reflash the DEFAULT 10-minute build (already compiled from the working tree; press reset or hold G0 on replug); test the phone page (REC banner, Start/Stop, clock, download); then update firmware README, commit and, with user approval, push as v1.2.
 - Open items: idle live-mode auto-off policy, bright-light test, calibrate LUX_K/K_SCALE, IMU axes, compare two AS7341 units under the same lamp.
+
+## Daily log files + buzzer fix (coded and COMPILED 2026-10-13 evening, NOT flashed or tested)
+- Log is now one file per day: `/lightdx_YYYY-MM-DD.csv` (date from the RTC at row time; `/lightdx_NOTSET.csv` if the clock is invalid). Header written when a day file is created; a day file with a mismatching header is renamed `..._prevN.csv`. A session crossing midnight continues in the next day's file (use the `session` column to join).
+- Web: `/log` = today, `/log?d=YYYY-MM-DD` = that day, `/files` = "YYYY-MM-DD,bytes" lines; page shows "today" plus the last 14 day links. Serial: `d` today, `D YYYY-MM-DD` another day, `e` erase today only.
+- The old single `/lightdx_log.csv` (and `_prev` files) are left untouched on the SD card.
+- Buzzer: user hears an insect-like buzz/chirp on every wake of capsule 1. G2 is now pulled low as the first line of `setup()` (before `M5Capsule.begin`). If it persists on battery (power-off between wakes), it is a power-transient click and needs hardware (remove/damp the buzzer) or never powering off. Untested.
+- Build: 1,201,331 bytes (91 % flash), RAM 16 %. Test tomorrow when reflashing: day file names, header, midnight rollover (set RTC near 23:59 to test), `/files` links on the phone, `D` command, buzzer.
