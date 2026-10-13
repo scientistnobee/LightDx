@@ -33,7 +33,7 @@ import FreeCAD as App
 # ============================== PARAMETERS ==============================
 
 # --- Electronics ---
-cap_l, cap_w, cap_h = 40.0, 24.0, 13.0       # Capsule board + headers, battery removed (user est. 13; was 14 with cell)
+cap_l, cap_w, cap_h = 41.0, 24.0, 13.0       # Capsule board + headers; length 40 -> 41 (2026-10-13, 40.4 pocket was too tight)
 cell_l, cell_w, cell_t = 30.0, 20.0, 6.0     # LiPo (fits 30.4 x 20.4; 602025 -> 6 mm)
 clr = 0.2                                    # per-side pocket clearance
 cap_pl, cap_pw = cap_l + 2 * clr, cap_w + 2 * clr
@@ -86,6 +86,7 @@ usb_z0, usb_z1 = usb_zc - usb_h / 2, usb_zc + usb_h / 2
 
 # --- Battery lead notch through the divider (x position, ASSUMED) ---
 lead_x, lead_w = 14.0, 4.0
+i2c_x = -14.0   # I2C (STEMMA QT) cable notch, same size as the lead notch, at the other end (2026-10-13)
 lead_z0 = floor_t + 1.0
 
 # --- Base screws (4x M2x14 from the underside) in the solid blocks beside the battery pocket.
@@ -100,7 +101,7 @@ tap_r = 0.9                            # M2 self-tap pilot
 tap_depth = post_len + 1.5             # blind, from the post bottom (leaves 1 mm skin on top)
 
 # --- Lid aperture (carried over from the puck) ---
-seat_radius, seat_depth = 6.1, 1.5
+seat_radius, seat_depth = 5.6, 1.5   # diffuser seat dia 12.2 -> 11.2 (2026-10-13)
 shoulder_inner_radius = 5.0
 shoulder_depth = top_t - seat_depth
 rim_enabled = False
@@ -146,6 +147,8 @@ def build_base():
         box(-L_out / 2 - 1, cap_x0 + 0.1, cap_cy - usb_w / 2, cap_cy + usb_w / 2, usb_z0, usb_z1),
         # battery lead notch through the divider, open on top
         box(lead_x - lead_w / 2, lead_x + lead_w / 2, cell_y1 - 0.1, cap_y0 + 0.1, lead_z0, top + 1),
+        # I2C cable notch through the divider, mirrored to the other end
+        box(i2c_x - lead_w / 2, i2c_x + lead_w / 2, cell_y1 - 0.1, cap_y0 + 0.1, lead_z0, top + 1),
     ]
     # AS7341 JST plug slots beyond the ends of the pocket, from the PCB level up
     for sign in (1, -1):
