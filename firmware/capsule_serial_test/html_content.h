@@ -4,7 +4,7 @@
 
 static const char INDEX_HTML[] PROGMEM = R"HTML(<!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LightDX spectrum</title>
+<title>LightDX dosimeter</title>
 <style>
 body{font-family:system-ui,sans-serif;margin:0;padding:12px;background:#111;color:#eee}
 h1{font-size:1.1rem;margin:0 0 8px}
@@ -12,13 +12,16 @@ canvas{width:100%;max-width:720px;height:300px;background:#1b1b1b;border-radius:
 .g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;max-width:720px;margin-top:10px}
 .c{background:#1b1b1b;border-radius:6px;padding:8px}.c b{display:block;font-size:1.15rem}.c span{font-size:.75rem;color:#999}
 #st{color:#999;font-size:.8rem;margin-top:8px}.w{color:#f90}
+.rb{background:#1b1b1b;border-radius:6px;padding:10px;margin-top:10px;max-width:720px;color:#999}.rb.on{background:#5a0f0f;color:#fff;font-weight:600}
 a{color:#7cf}button{font:inherit;padding:6px 10px;border-radius:6px;border:1px solid #555;background:#222;color:#eee}
 </style></head><body>
 <h1>LightDX AS7341 live spectrum</h1>
+<div id="rb" class="rb">connecting...</div>
+<p><button id="go" type="button">Start recording</button> <button id="stp" type="button">Stop recording</button> <span id="recmsg"></span></p>
 <canvas id="cv" width="720" height="300"></canvas>
 <div class="g">
 <div class="c"><span>E_ppix (arb.)</span><b id="e">-</b></div>
-<div class="c"><span>J_ppix (arb.)</span><b id="j">-</b></div>
+<div class="c"><span>J_ppix, this session (arb.)</span><b id="j">-</b></div>
 <div class="c"><span>lux (arb. until calibrated)</span><b id="l">-</b></div>
 <div class="c"><span>gain / tint</span><b id="gt">-</b></div>
 <div class="c"><span>flicker</span><b id="f">-</b></div>
@@ -52,6 +55,8 @@ async function tick(){
     f.textContent=d.flicker_hz?d.flicker_hz+' Hz':'none/unknown';
     s.textContent=d.n_sat;s.className=d.n_sat?'w':'';
     dt.textContent=d.dt;
+    rb.textContent=d.rec?'● RECORDING session '+d.sid+' - '+hms(d.el)+' of '+hms(d.mx)+' max':'Not recording: live view only, nothing is logged';
+    rb.className=d.rec?'rb on':'rb';
     sd.textContent=d.sd_total_mb>0?(d.sd_free_mb>=1024?(d.sd_free_mb/1024).toFixed(1)+' GB':d.sd_free_mb+' MB')+' of '+(d.sd_total_mb/1024).toFixed(1)+' GB':'no card';
     bt.textContent=(d.batt_mv>0?(d.batt_mv/1000).toFixed(2)+' V':'-')+(d.batt_pct>=0?' ('+d.batt_pct+'%)':'');
     st.textContent='updated '+new Date().toLocaleTimeString()+'  (device uptime '+(d.ms/1000|0)+' s)';
@@ -59,7 +64,15 @@ async function tick(){
 }
 const e=document.getElementById('e'),j=document.getElementById('j'),l=document.getElementById('l'),
 gt=document.getElementById('gt'),f=document.getElementById('f'),s=document.getElementById('s'),st=document.getElementById('st'),
-dt=document.getElementById('dt'),bt=document.getElementById('bt'),sd=document.getElementById('sd');
+rb=document.getElementById('rb'),dt=document.getElementById('dt'),bt=document.getElementById('bt'),sd=document.getElementById('sd');
+const hms=v=>{v=v|0;const p=x=>String(x).padStart(2,'0');return p(v/3600|0)+':'+p(v/60%60|0)+':'+p(v%60)};
+const nowStr=()=>{const n=new Date(),p=v=>String(v).padStart(2,'0');return n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())+' '+p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds())};
+async function recCmd(q){
+  const m=document.getElementById('recmsg');
+  try{const r=await fetch('/rec?'+q);m.textContent=r.ok?'sent':'failed'}catch(e){m.textContent='failed: '+e}
+}
+document.getElementById('go').onclick=()=>recCmd('cmd=start&t='+encodeURIComponent(nowStr()));
+document.getElementById('stp').onclick=()=>recCmd('cmd=stop');
 document.getElementById('clk').onclick=async()=>{
   const n=new Date(),p=v=>String(v).padStart(2,'0');
   const t=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())+' '+p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());
