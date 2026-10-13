@@ -348,7 +348,10 @@ void setup()
         Serial.println("SD card NOT found/mountable (FAT32 formatted? card seated?)");
     WiFi.mode(WIFI_AP);
     WiFi.softAP(AP_SSID, AP_PASS);
-    server.on("/", []() { server.send_P(200, "text/html", INDEX_HTML); });
+    server.on("/", []() {
+        server.sendHeader("Cache-Control", "no-store"); // phones kept showing an old copy of the page after a firmware update
+        server.send_P(200, "text/html", INDEX_HTML);
+    });
     server.on("/data", []() {
         char copy[sizeof(lastJson)];
         xSemaphoreTake(jsonMutex, portMAX_DELAY);
