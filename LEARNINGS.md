@@ -572,3 +572,9 @@ Firmware: `firmware/capsule_serial_test/` (working tree, branch `step2-wip`; Git
 - Flashed the daily-file + early-buzzer-pin-low build (default 10 min idle) onto capsule 1 while the session was recording: session and J_ppix survived the reflash (elapsed continued at 35,414 s). `/lightdx_2026-10-14.csv` created with a correct header; the old `lightdx_log.csv` and `_prev` files were left untouched.
 - User confirmed: the `LightDX` hotspot is visible from the phone with the 10-minute build, and the insect-like buzz on wake is gone (G2 pulled low first in setup works; no hardware fix needed).
 - Still to verify: phone page Start/Stop/REC banner, set-clock, day download links, midnight rollover, auto_12h row.
+
+## Phone page test 2026-10-14 01:22-01:34 (daily-file build)
+- Verified from the phone: REC banner (timer correct), live spectrum, device time = phone time, download of `lightdx_2026-10-14.csv` (21 rows, correct header), Start, Stop, Set clock. Session 4 start->stop in 12 s, J_ppix reset to 0 then 4.5.
+- Bug found: pressing Start while session 3 was recording began session 4 WITHOUT a closing row for session 3. Fixed in source (start now logs a "stop" row for the running session first). Compiled (1,201,455 bytes), not yet flashed.
+- Battery tile showed "4.36 V (100%)" on USB. Page now shows "USB power (x V, not the cell)" above 4.25 V. Not yet flashed.
+- While the page is open the board stays in live mode (uptime ms keeps counting, rows still every 60 s but not on the minute); the sleep cycle only resumes 10 min after the last request.

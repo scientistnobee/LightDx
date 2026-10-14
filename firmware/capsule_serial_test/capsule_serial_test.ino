@@ -777,6 +777,13 @@ void loop()
     if (pendingCmd == 1)
     {
         pendingCmd = 0;
+        if (recActive) // close the running session with a "stop" row before the new one begins
+        {
+            Sample old;
+            takeSample(old, false);
+            stopRequested = true;
+            processSample(old, true);
+        }
         startSession();
     }
     else if (pendingCmd == 2)

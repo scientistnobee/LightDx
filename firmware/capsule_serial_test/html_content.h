@@ -58,7 +58,7 @@ async function tick(){
     rb.textContent=d.rec?'● RECORDING session '+d.sid+' - '+hms(d.el)+' of '+hms(d.mx)+' max':'Not recording: live view only, nothing is logged';
     rb.className=d.rec?'rb on':'rb';
     sd.textContent=d.sd_total_mb>0?(d.sd_free_mb>=1024?(d.sd_free_mb/1024).toFixed(1)+' GB':d.sd_free_mb+' MB')+' of '+(d.sd_total_mb/1024).toFixed(1)+' GB':'no card';
-    bt.textContent=(d.batt_mv>0?(d.batt_mv/1000).toFixed(2)+' V':'-')+(d.batt_pct>=0?' ('+d.batt_pct+'%)':'');
+    bt.textContent=d.batt_mv>4250?'USB power ('+(d.batt_mv/1000).toFixed(2)+' V, not the cell)':(d.batt_mv>0?(d.batt_mv/1000).toFixed(2)+' V':'-')+(d.batt_pct>=0?' ('+d.batt_pct+'%)':'');
     st.textContent='updated '+new Date().toLocaleTimeString()+'  (device uptime '+(d.ms/1000|0)+' s)';
   }catch(err){st.textContent='no data: '+err}
 }
