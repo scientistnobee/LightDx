@@ -566,3 +566,9 @@ Firmware: `firmware/capsule_serial_test/` (working tree, branch `step2-wip`; Git
 - The old single `/lightdx_log.csv` (and `_prev` files) are left untouched on the SD card.
 - Buzzer: user hears an insect-like buzz/chirp on every wake of capsule 1. G2 is now pulled low as the first line of `setup()` (before `M5Capsule.begin`). If it persists on battery (power-off between wakes), it is a power-transient click and needs hardware (remove/damp the buzzer) or never powering off. Untested.
 - Build: 1,201,331 bytes (91 % flash), RAM 16 %. Test tomorrow when reflashing: day file names, header, midnight rollover (set RTC near 23:59 to test), `/files` links on the phone, `D` command, buzzer.
+
+## Results 2026-10-14 (morning)
+- Overnight run of session 3 (old build, USB + battery mix): 538 rows 15:25 -> 01:14 (9.8 h), 507/545 gaps exactly 60 s, J_ppix reached 6451 across ~590 power-offs. Battery on the cell 4.30 V -> 4.18 V over ~9 h (readings of 4.4-4.55 V are USB charging). Auto 12 h stop (due ~03:25) not yet observed.
+- Flashed the daily-file + early-buzzer-pin-low build (default 10 min idle) onto capsule 1 while the session was recording: session and J_ppix survived the reflash (elapsed continued at 35,414 s). `/lightdx_2026-10-14.csv` created with a correct header; the old `lightdx_log.csv` and `_prev` files were left untouched.
+- User confirmed: the `LightDX` hotspot is visible from the phone with the 10-minute build, and the insect-like buzz on wake is gone (G2 pulled low first in setup works; no hardware fix needed).
+- Still to verify: phone page Start/Stop/REC banner, set-clock, day download links, midnight rollover, auto_12h row.
