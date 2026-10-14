@@ -578,3 +578,6 @@ Firmware: `firmware/capsule_serial_test/` (working tree, branch `step2-wip`; Git
 - Bug found: pressing Start while session 3 was recording began session 4 WITHOUT a closing row for session 3. Fixed in source (start now logs a "stop" row for the running session first). Compiled (1,201,455 bytes), not yet flashed.
 - Battery tile showed "4.36 V (100%)" on USB. Page now shows "USB power (x V, not the cell)" above 4.25 V. Not yet flashed.
 - While the page is open the board stays in live mode (uptime ms keeps counting, rows still every 60 s but not on the minute); the sleep cycle only resumes 10 min after the last request.
+
+## v1.2 released 2026-10-14
+Flashed to capsule 1 and verified over serial: Start while recording -> session 5 closed with a `stop` row (7 s, J 2.65), session 6 starts at the same second with J 0; stop row for 6. v1.2 = session recording + 60 s low-power cycle, daily log files, buzzer pin low first, USB battery label, phone Start/Stop/download/set-clock verified.
