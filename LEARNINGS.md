@@ -581,3 +581,11 @@ Firmware: `firmware/capsule_serial_test/` (working tree, branch `step2-wip`; Git
 
 ## v1.2 released 2026-10-14
 Flashed to capsule 1 and verified over serial: Start while recording -> session 5 closed with a `stop` row (7 s, J 2.65), session 6 starts at the same second with J 0; stop row for 6. v1.2 = session recording + 60 s low-power cycle, daily log files, buzzer pin low first, USB battery label, phone Start/Stop/download/set-clock verified.
+
+## STATE AT END OF 2026-10-14 SESSION (supersedes the earlier "state / TODO tomorrow")
+- GitHub `main` = v1.2 (3aafe85, tag v1.2). Capsule 1 (COM8, old AS7341 on default pins) runs v1.2, no session recording, awake in live mode on USB (will drain the battery if unplugged without starting a session: the sleep cycle only runs while recording).
+- Capsule 2 (COM9, new AS7341 on swapped pins 15/13, no SD, RTC unset) runs v1.1 from the git tag. It has NOT been updated to v1.2.
+- Verified: session start/stop/auto-close from the phone, REC banner, device time, set clock, daily day-file download, 60 s battery wake cycle (6.7-9.8 h runs), buzz gone, start-while-recording closes the old session.
+- Not verified: auto_12h row, midnight rollover to a new day file, batt_low stop at 3.3 V, full battery endurance run to empty, calibration of E_ppix/lux (arbitrary units), IMU axes in the puck, bright-light AGC at 50 ms, two-sensor comparison under one lamp.
+- Open decisions: auto-off / low-power policy for live mode when NOT recording; flash capsule 2 with v1.2 (needs an SD card).
+- Tips: opening COM port resets the board; flash while awake (press reset, or hold G0 on replug); long compile ~8 min; use Edit/Write tools, not Python replacement strings, for C escapes.
