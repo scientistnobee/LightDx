@@ -242,7 +242,7 @@ y values are in the figure frame of section 4 (box centre = 0); the printed box 
 <tr><td>Capsule pocket</td><td class="n">38.4 x 24.4 (battery pocket 27.9 x 21.0); USB-C connector should now stick out about 1.5 mm past the front wall (it touched the wall in the print)</td><td><span class="tag">built</span></td></tr>
 <tr><td>USB-C window</td><td class="n">9.4 x 3.8, centre z 6.9 (raised 1.2 after the print)</td><td><span class="tag">height to verify</span></td></tr>
 <tr><td>AS7341 retention</td><td class="n">4 lid pins, 2.0 mm, no screws</td><td><span class="tag">fit to verify</span></td></tr>
-<tr><td>Diffuser seat</td><td class="n">dia 12.0 (was 11.2, then 12.4), 1.5 deep; aperture dia 10</td><td><span class="tag">built</span></td></tr>
+<tr><td>Diffuser seat</td><td class="n">dia 12.0 (was 11.2, then 12.4), 1.0 deep (was 1.5); aperture dia 10, so the rim under the diffuser is 1.0 thick (was 0.5)</td><td><span class="tag">built</span></td></tr>
 <tr><td>Divider notches</td><td class="n">4 mm wide at x = +11 (battery lead), -11 (I2C cable)</td><td><span class="tag">built</span></td></tr>
 <tr><td>G42 button</td><td class="n">U-slot tongue 7 x 8.9, slot 0.8, nub at (16.2, 10.7), nub bottom z 7.5 (1.5 mm shorter)</td><td><span class="tag">estimated</span></td></tr>
 <tr><td>Power LED</td><td class="n">slit 1.6 x 3.4 (long in Y) in the lid at (13.2, 10.7) (position a guess)</td><td><span class="tag">estimated</span></td></tr>

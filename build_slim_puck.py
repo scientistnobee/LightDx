@@ -124,7 +124,7 @@ tongue_hw, tongue_len, slot_w = 3.5, 8.9, 0.8      # tongue half width, length (
 nub_r, nub_z0 = 1.2, 7.5                           # pusher under the tongue; bottom z (ASSUMED switch height)
 
 # --- Lid aperture (carried over from the puck) ---
-seat_radius, seat_depth = 6.0, 1.5   # diffuser seat dia 11.2 printed too small -> 12.4 (2026-10-15)
+seat_radius, seat_depth = 6.0, 1.0   # diffuser seat dia 11.2 printed too small -> 12.4 (2026-10-15)
 shoulder_inner_radius = 5.0
 shoulder_depth = top_t - seat_depth
 rim_enabled = False
