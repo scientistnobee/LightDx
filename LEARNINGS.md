@@ -589,3 +589,47 @@ Flashed to capsule 1 and verified over serial: Start while recording -> session 
 - Not verified: auto_12h row, midnight rollover to a new day file, batt_low stop at 3.3 V, full battery endurance run to empty, calibration of E_ppix/lux (arbitrary units), IMU axes in the puck, bright-light AGC at 50 ms, two-sensor comparison under one lamp.
 - Open decisions: auto-off / low-power policy for live mode when NOT recording; flash capsule 2 with v1.2 (needs an SD card).
 - Tips: opening COM port resets the board; flash while awake (press reset, or hold G0 on replug); long compile ~8 min; use Edit/Write tools, not Python replacement strings, for C escapes.
+
+## Enclosure: v3 and slim_puck (2026-10-13)
+Model: `Square_puck_v2.FCStd` (saved; v3 box objects `Box_*` kept but hidden, slim objects `Slim_Base`, `Slim_Lid`, `Ref_Slim_*` visible).
+Scripts (run in FreeCAD via the MCP, `build_and_apply("Square_puck_v2")`): `build_box_enclosure.py` = v3, `build_slim_puck.py` = slim_puck;
+older slim steps kept as `build_slim_puck_rev1..rev9.py`, v2 as `build_box_enclosure_v2_prev.py`.
+
+**v3** (first printed fit after the user's tweaks): Capsule length 40 -> 41 (pocket 41.4, the 40.4 pocket was very tight), diffuser seat radius 6.1 -> 5.6 (dia 12.2 -> 11.2; through-aperture unchanged, dia 10),
+second divider notch for the I2C cable mirrored at x = -14 (battery-lead notch at +14). 45.4 x 50 x 16.6. Exports `Box_Base_v3.stl`, `Box_Lid_v3.stl`. User printed it: fits "very well".
+
+**Hardware change (user, 2026-10-13):** the I2C (STEMMA QT/JST) connectors were removed from the AS7341 and the new Capsule (wires soldered), photos `enclosure1.jpeg`, `enclosure2.jpeg`.
+User said roughly half the base height was now free.
+
+**slim_puck, current state: 42.4 x 50 x 12.7 mm** (`Slim_Puck_Base.stl`, `Slim_Puck_Lid.stl`, exported 2026-10-13 23:57, NOT printed yet). Base 10.7 + lid 2.0.
+- ESTIMATES, user said to correct after printing: Capsule height 7.0 mm (was 13), AS7341 board + parts 2.8 mm (pocket depth 3.0). Not measured with calipers.
+- AS7341 is held by 4 lid posts with 2 mm pins through its corner holes (no screws), 0.5 mm over the cell (was 2.0 for screw heads). Lid pins in the board holes show as a 19.7 mm3 "clash": intended.
+- Floor 1.2, lid 2.0 (seat 1.5 + 0.5 shoulder), both end walls 1.0, side walls 2.0. Battery/AS7341 pocket 27.9 long (was 30.4; user: pocket was >= 2.5 mm too big), width 20.4 unchanged.
+- Base screws: M2x8 (not 14), in the 7 mm blocks beside the cell. Divider notches at x = +-11 (lead, I2C).
+- Height is set by the sensor stack (1.2 floor + 6 cell + 0.5 + 3.0 + 2.0 = 12.7); the Capsule stack is only 10.2. 7.5 mm total is not reachable with the AS7341 over the 6 mm cell and the 42 x 50 footprint (user ruled out a bigger footprint).
+- Length: Capsule pocket 40.4 (cap_inset = 1.0): the USB-C end pokes up to 1 mm into the front wall window. USB window 9.4 x 3.8 mm (connector 8.94 x 3.26 + clearance), centre z = floor + cap_h - 2.5 = 5.7 (from an old photo, to verify).
+  Earlier idea of an open USB end was dropped; the user chose a closed wall with a connector-sized window.
+- Lid features, positions estimated from `enclosure2.jpeg` (rows: x from the far end, y from the Capsule centre line, - = sensor side): G42 tactile button at 1.8 mm from the end, y -3.4: U-slot tongue 7 wide x 8.9 long, slot 0.8, hinged on the inner side, nub r1.2 down to z = 6.0 (switch height ASSUMED; 2 mm PLA may be too stiff, thin to ~1 mm if so).
+  2 mm hole over the chip next to the button (maybe the power LED), y -4.3, 4.8 mm from the end (a guess).
+- Base far end wall: RGB LED (G21) is SIDE mounted at the board edge beside the buzzer (user): window 3.0 x 1.6 mm at y +3.4, z 3.4. Side-mounted BOOT switch (G0), "just below the top tactile switch": 2.4 mm hole at y = button y, z 3.0. Both z values assume the PCB top is at z ~2.8: guesses.
+- Capsule_v1.1.stl (M5 shell): the end cap has a 16 x 9.5 mm flap with a U-slot at y -18..-8.5, plus a 5 x 0.6 mm groove (a fingerprint mark, not an LED window). Capsule = 24 x 40 shell, USB-C protrudes ~1 mm. Only used as a template for the flap.
+- Open to verify when printed: Capsule real height and connector height, pin fit in AS7341 holes (2.0 vs ~2.2 hole), 1.0 mm walls and 0.5 mm shoulder strength, tongue stiffness, LED/switch hole positions, whether screws M2x8 are enough.
+
+## Measurements 2026-10-15 + design page
+User calipers: Capsule board (headers incl.) 6 mm; battery 4.5 mm; AS7341 2.5 mm; battery + AS7341 stacked 7 mm tall x 25 long x 20 wide (photos `all_together.jpeg`, `battery1.jpeg`, `caspule_board.jpeg`).
+Model/STLs still use the old estimates (7 / 6 / 3.0). Proposed rebuild: cap_h 6.0, cell_t 4.5, AS7341 2.5 (stack 7.0 + 0.3 clearance), pocket 25.8 x 20.4 (the Adafruit AS7341 is 25.4 long: keep >= 25.8), total height ~10.5 mm (was 12.7), footprint unchanged. NOT applied yet.
+Design page: `LightDx_slim_puck_design.html` (self-contained, built by `make_slim_design_page.py` from FreeCAD views saved in `renders/fc_*.png` + the photos). Capture tip: in FreeCAD call `v.setAnimationEnabled(False)` and `Gui.updateGui()` before `saveImage`, otherwise the standard views are saved mid-rotation.
+
+## Print feedback on Slim_Puck_Base/Lid (2026-10-15, first print of the 2026-10-13 STLs)
+Photos in `3D_print_photos/`. Heights worked well (12.7 mm), unchanged. Applied in `build_slim_puck.py` (saved in `Square_puck_v2.FCStd`; STLs NOT re-exported yet):
+- USB-C connector sits higher than the window: window raised 1.2 mm (centre z 5.7 -> 6.9).
+- Capsule pocket had 2 mm spare in width: cap_w 24 -> 22 (pocket 22.4), taken off the outer side (board sits against the divider wall); features keep their y from the divider wall (`feat_cy`). Box 42.4 x 48.0.
+- Diffuser seat printed too small: dia 11.2 -> 12.4 (r 6.2).
+- G42 pusher nub (and its U-slot tongue + the 2 mm lid LED hole) moved 2 mm toward the USB end (-X) and 2 mm toward +Y (outer wall side): nub (16.2, 10.4), hole (13.2, 9.5). Direction read from the lid photo (underside, flipped about the X axis: image down = +Y).
+- Far-end wall holes (RGB LED window y 14.4, BOOT hole y 8.4): photo 1 has arrows pointing toward +Y (right when looking at the far end from outside); distance not stated, NOT applied yet.
+- Axis convention for the design page figure: X right (USB end -X, far end +X), Y up (Capsule +Y, battery/AS7341 -Y), origin at box centre.
+- (2026-10-15, later) Photo `3D_print_photos/WhatsApp Image 2026-10-15 at 12.32.21.jpeg` (assembled base, USB end left): ~3 mm spare beside the Capsule at both X ends. Shaved 1.5 mm off each end (`x_shave`): Capsule pocket 40.4 -> 37.4, box 42.4 -> 39.4 mm x 48.0 x 12.7. Feature positions kept in box coordinates (symmetric shave), so the USB connector now pokes ~1.5 mm further into its 1.0 mm wall window; screw blocks are 5.75 mm wide (tight for the 4.4 mm counterbore, user will use small screw heads). Far-wall holes moved 4 mm toward +Y: RGB window y = 18.4, BOOT hole y = 12.4. Not exported yet; design page not regenerated yet.
+- (2026-10-15, later) Lid LED opening is now a USB-C-like slit 1.6 (X) x 3.4 (Y) at (13.2, 10.0); far-wall BOOT hole at y = 10.0; RGB window stays at y 18.4 (spacing to BOOT now 8.4, user had measured 6.0: to confirm). Nub/tongue centre is y 10.4 (0.4 mm off the user's "10 mm"). Design page updated, STLs NOT exported yet.
+- 2026-10-15 (2nd print): Capsule and battery pockets did not fit width-wise after my 2 mm trim. Restored cap_w 24 (pocket 24.4), widened battery pocket 20.4 -> 21.0 (cell_w 20.6). Box now 39.4 x 50.6 x 12.7. Lid LED slit and BOOT hole y are now relative to the divider (feat_cy - 1.8) so they stay aligned with the tongue; absolute box-centre y is 9.3 (nub 9.7). STLs re-exported. Previous script: build_slim_puck_rev16.py.
+- 2026-10-15 (correction): the "2 mm spare" was along X, not Y. x_shave 1.5 -> 1.0 (Capsule pocket 38.4 long, box 40.4); Capsule width back to 24.4, battery pocket 21.0; box 40.4 x 50.6 x 12.7. Diffuser seat dia 12.4 -> 12.0 (seat_radius 6.0). Nub y 9.7, LED slit / BOOT y 9.3, RGB y 17.7 (all relative to the divider wall). STLs re-exported, design page + plan diagram regenerated. Previous script: build_slim_puck_rev17.py.
+- 2026-10-15 (2nd print feedback, "very close"): G42 tongue + nub 1 mm toward +Y (nub y 10.7); nub 1.5 mm shorter (nub_z0 6.0 -> 7.5); BOOT hole +1 mm Y (y 10.3); RGB window -1 mm Y (y 16.7) and +1.5 mm height (zc 4.9). Lid LED slit left at y 9.3 (not asked). STLs re-exported, page regenerated. Previous script: build_slim_puck_rev18.py.
