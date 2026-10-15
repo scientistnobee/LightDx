@@ -124,8 +124,8 @@ tongue_hw, tongue_len, slot_w = 3.5, 8.9, 0.8      # tongue half width, length (
 nub_r, nub_z0 = 1.2, 7.5                           # pusher under the tongue; bottom z (ASSUMED switch height)
 
 # --- Lid aperture (carried over from the puck) ---
-diffuser_t, rim_t, boss_r = 2.0, 1.0, 8.0   # diffuser disc 2.0 thick (user 2026-10-15); rim under it 1.0; raised boss ring around the seat
-seat_radius, seat_depth = 6.0, diffuser_t   # diffuser seat dia 12.0, deep enough for the whole disc (flush with the boss top)
+diffuser_t, rim_t, boss_r = 2.0, 0.5, 8.0   # diffuser disc 2.0 thick; ledge under it 0.5 (user 2026-10-15: no raised ring, 1.0 not needed; the disc stands 0.5 proud)
+seat_radius, seat_depth = 6.0, top_t - rim_t   # diffuser seat dia 12.0, 1.5 deep
 shoulder_inner_radius = 5.0
 boss_h = seat_depth + rim_t - top_t         # boss on the lid top: 1.0 mm, so seat (2.0) + rim (1.0) fit in lid 2.0 + boss
 shoulder_depth = rim_t
