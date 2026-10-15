@@ -167,9 +167,9 @@ td.n {{ font-variant-numeric:tabular-nums; white-space:nowrap; }}
 .scroll {{ overflow-x:auto; }}
 </style></head><body><main>
 <h1>LightDx slim_puck</h1>
-<p class="sub">Design page, 2026-10-15 (updated after the first print). Renders are FreeCAD views of the saved model <code>Square_puck_v2.FCStd</code> (Slim_Base, Slim_Lid; built 2026-10-13 on the old height estimates). Measurements are the user's caliper readings from 2026-10-15.</p>
+<p class="sub">Design page, 2026-10-15 (updated with the feedback from the second print). Renders are FreeCAD views of the saved model <code>Square_puck_v2.FCStd</code> (Slim_Base, Slim_Lid); the STLs in the folder match it, and the state is committed to GitHub (tag <code>slim-puck-print2</code>). Heights are still the old estimates (12.7 mm total). Measurements are the user's caliper readings from 2026-10-15.</p>
 
-<h2>Changes since the first print (2026-10-15)</h2>
+<h2>Changes since the first print (2026-10-15, including the second-print feedback)</h2>
 <div class="card scroll"><table>
 <tr><th>Item</th><th>First printed version</th><th>Current model</th><th>Why</th></tr>
 <tr><td>Box length (X)</td><td class="n">42.4 mm</td><td class="n acc">40.4 mm</td><td>2 mm spare along X beside the Capsule: 1 mm shaved off each end</td></tr>
