@@ -124,9 +124,11 @@ tongue_hw, tongue_len, slot_w = 3.5, 8.9, 0.8      # tongue half width, length (
 nub_r, nub_z0 = 1.2, 7.5                           # pusher under the tongue; bottom z (ASSUMED switch height)
 
 # --- Lid aperture (carried over from the puck) ---
-seat_radius, seat_depth = 6.0, 1.0   # diffuser seat dia 11.2 printed too small -> 12.4 (2026-10-15)
+diffuser_t, rim_t, boss_r = 2.0, 1.0, 8.0   # diffuser disc 2.0 thick (user 2026-10-15); rim under it 1.0; raised boss ring around the seat
+seat_radius, seat_depth = 6.0, diffuser_t   # diffuser seat dia 12.0, deep enough for the whole disc (flush with the boss top)
 shoulder_inner_radius = 5.0
-shoulder_depth = top_t - seat_depth
+boss_h = seat_depth + rim_t - top_t         # boss on the lid top: 1.0 mm, so seat (2.0) + rim (1.0) fit in lid 2.0 + boss
+shoulder_depth = rim_t
 rim_enabled = False
 rim_outer_r, rim_inner_r, rim_height = 9.0, 8.25, 2.0
 
@@ -195,6 +197,9 @@ def build_lid():
     ax, ay = cell_cx, cell_cy
     solid = rounded_block(z0, lid_t)
 
+    if boss_h > 0:
+        solid = solid.fuse(Part.makeCylinder(boss_r, boss_h + 0.1, V(ax, ay, ztop - 0.1)))
+
     # Posts hang below the plate: 4 locating posts for the base screws, 4 for the AS7341
     for (x, y) in screw_xy:
         solid = solid.fuse(Part.makeCylinder(post_r, post_len + 0.5, V(x, y, z0 - post_len)))
@@ -208,8 +213,8 @@ def build_lid():
         box(cap_x0, cap_x1, cap_y0, cap_y1, z0 - 0.5, z0 + max(lid_recess, 0.1)),
         # USB-C plug window through the -X end wall of the lid
         # stepped aperture: seat (disk) cut from the top, shoulder through the plate below
-        Part.makeCylinder(seat_radius, seat_depth + 0.5, V(ax, ay, ztop - seat_depth)),
-        Part.makeCylinder(shoulder_inner_radius, shoulder_depth + 1.0, V(ax, ay, ztop - top_t - 0.5)),
+        Part.makeCylinder(seat_radius, seat_depth + 0.5, V(ax, ay, ztop + boss_h - seat_depth)),
+        Part.makeCylinder(shoulder_inner_radius, top_t + boss_h - seat_depth + 1.0, V(ax, ay, ztop - top_t - 0.5)),
     ]
     if usb_z1 > z0 - 0.5:   # USB window reaches into the lid only if the Capsule is tall
         tools.append(box(-L_out / 2 - 1, cap_x0 + 0.1, feat_cy - usb_w / 2, feat_cy + usb_w / 2, z0 - 0.5, usb_z1))

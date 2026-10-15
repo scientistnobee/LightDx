@@ -39,7 +39,8 @@ def plan_svg():
     p.append(f'<rect x="{X(-13.95)}" y="{Y(-2.3)}" width="{27.9*s}" height="{21.0*s}" fill="#5b86d6" fill-opacity="0.22" stroke="#3b62b0"/>')
     p.append(f'<text x="{X(0)}" y="{Y(-21.0)}" text-anchor="middle" font-size="12" fill="{col}">Battery + AS7341 pocket 27.9 x 21.0</text>')
     p.append(f'<circle cx="{X(0)}" cy="{Y(-12.8)}" r="{6.0*s}" fill="none" stroke="#c0701a" stroke-width="1.6" stroke-dasharray="4 3"/>')
-    p.append(f'<text x="{X(0)}" y="{Y(-12.8)+4}" text-anchor="middle" font-size="11" fill="#c0701a">diffuser seat dia 12.0</text>')
+    p.append(f'<text x="{X(0)}" y="{Y(-12.8)+4}" text-anchor="middle" font-size="11" fill="#c0701a">diffuser seat dia 12.0 (ring dia 16)</text>')
+    p.append(f'<circle cx="{X(0)}" cy="{Y(-12.8)}" r="{8.0*s}" fill="none" stroke="#c0701a" stroke-width="1" opacity="0.6"/>')
     for sx in (1, -1):
         for sy in (-20.5, -5.1):
             p.append(f'<circle cx="{X(sx*17.075)}" cy="{Y(sy)}" r="{1.3*s}" fill="none" stroke="{col}"/>')
