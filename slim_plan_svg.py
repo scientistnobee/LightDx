@@ -46,7 +46,7 @@ def plan_svg():
     # lid: G42 tongue x 8.5..17.4, y 6.9..13.9; nub (16.2, 10.4); lid LED hole (13.2, 9.5)
     p.append(f'<rect x="{X(8.5)}" y="{Y(14.2)}" width="{8.9*s}" height="{7.0*s}" fill="#e8c34a" fill-opacity="0.35" stroke="#a8570a" stroke-dasharray="3 2"/>')
     p.append(f'<circle cx="{X(16.2)}" cy="{Y(10.7)}" r="{1.2*s}" fill="#a8570a"/>')
-    p.append(f'<rect x="{X(13.2-0.8)}" y="{Y(9.3+1.7)}" width="{1.6*s}" height="{3.4*s}" rx="{0.8*s}" fill="none" stroke="#a8570a" stroke-width="1.5"/>')
+    p.append(f'<rect x="{X(13.2-0.8)}" y="{Y(10.7+1.7)}" width="{1.6*s}" height="{3.4*s}" rx="{0.8*s}" fill="none" stroke="#a8570a" stroke-width="1.5"/>')
     p.append(f'<line x1="{X(18.2)-4}" y1="{Y(7.7)-4}" x2="{X(16.2)+5}" y2="{Y(10.7)+5}" stroke="#a8570a" stroke-width="1.2" marker-end="url(#am)"/>')
     p.append(f'<text x="{X(10)}" y="{Y(16.1)}" text-anchor="middle" font-size="11" fill="#a8570a">G42 tongue, nub (16.2, 10.7)</text>')
     # USB window on the -X wall (y 11.8, 9.4 wide); far-wall windows on +X wall: RGB y 18.4, BOOT y 12.4

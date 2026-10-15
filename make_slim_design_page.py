@@ -165,25 +165,27 @@ td.n {{ font-variant-numeric:tabular-nums; white-space:nowrap; }}
 .tag {{ display:inline-block; font-size:.75rem; padding:1px 7px; border-radius:99px; border:1px solid var(--line); color:var(--mut); }}
 .warn {{ color:var(--warn); }} .acc {{ color:var(--acc); }}
 .scroll {{ overflow-x:auto; }}
+.chg th:nth-child(1) {{ width:17%; }} .chg th:nth-child(2), .chg th:nth-child(3) {{ width:21%; }} .chg th:nth-child(4) {{ width:41%; }}
+.chg td.n {{ white-space:normal; }}
 </style></head><body><main>
 <h1>LightDx slim_puck</h1>
 <p class="sub">Design page, 2026-10-15 (updated with the feedback from the second print). Renders are FreeCAD views of the saved model <code>Square_puck_v2.FCStd</code> (Slim_Base, Slim_Lid); the STLs in the folder match it, and the state is committed to GitHub (tag <code>slim-puck-print2</code>). Heights are still the old estimates (12.7 mm total). Measurements are the user's caliper readings from 2026-10-15.</p>
 
 <h2>Changes since the first print (2026-10-15, including the second-print feedback)</h2>
-<div class="card scroll"><table>
+<div class="card scroll"><table class="chg">
 <tr><th>Item</th><th>First printed version</th><th>Current model</th><th>Why</th></tr>
 <tr><td>Box length (X)</td><td class="n">42.4 mm</td><td class="n acc">40.4 mm</td><td>2 mm spare along X beside the Capsule: 1 mm shaved off each end</td></tr>
 <tr><td>Capsule pocket length</td><td class="n">40.4 mm</td><td class="n acc">38.4 mm</td><td>same; USB-C connector now pokes about 1.5 mm further into its window</td></tr>
-<tr><td>Box width (Y), Capsule / battery pocket width</td><td class="n">50.0 / 24.4 / 20.4 mm</td><td class="n acc">50.6 / 24.4 / 21.0 mm</td><td>the 2 mm spare was in X, not Y, so the Capsule width is unchanged; the battery pocket got +0.6 mm for wires and tape</td></tr>
+<tr><td>Box width (Y), Capsule / battery pocket width</td><td class="n">50.0 / 24.4 / 20.4 mm</td><td class="n acc">50.6 / 24.4 / 21.0 mm</td><td>the 2 mm spare was in X, so the Capsule width is unchanged; the battery pocket got +0.6 mm for wires and tape</td></tr>
 <tr><td>USB-C window height</td><td class="n">centre z 5.7 mm</td><td class="n acc">centre z 6.9 mm (+1.2)</td><td>connector sat higher than the window</td></tr>
 <tr><td>Diffuser seat diameter</td><td class="n">11.2 mm</td><td class="n acc">12.0 mm</td><td>printed too small; 12.4 was then 0.4 mm too big</td></tr>
-<tr><td>G42 pusher nub and tongue</td><td class="n">nub at (18.2, 8.4)</td><td class="n acc">(16.2, 10.7): 2 mm left, 3 mm up in total (y is from the box centre; the divider wall moved)</td><td>lid photo, then second print: tongue 1 mm further up; the nub is 1.5 mm shorter (bottom z 7.5, was 6.0)</td></tr>
-<tr><td>Lid power-LED opening</td><td class="n">round hole dia 2.0 at (15.2, 8.5)</td><td class="n acc">slit 1.6 x 3.4 (long in Y) at (13.2, 9.3)</td><td>user: align with the tongue in Y, USB-C-like slit</td></tr>
+<tr><td>G42 pusher nub and tongue</td><td class="n">nub at (18.2, 8.4)</td><td class="n acc">(16.2, 10.7): 2 mm left, 3 mm up</td><td>lid photo (2 mm left, 2 mm up), then second print: 1 mm further up and a 1.5 mm shorter nub (bottom z 7.5, was 6.0)</td></tr>
+<tr><td>Lid power-LED opening</td><td class="n">round hole dia 2.0 at (15.2, 8.5)</td><td class="n acc">slit 1.6 x 3.4 (long in Y) at (13.2, 10.7)</td><td>user: USB-C-like slit, centred on the tongue in Y (y 10.7, same as the nub)</td></tr>
 <tr><td>Far-wall RGB LED window</td><td class="n">y 15.2</td><td class="n acc">y 16.7, centre z 4.9 (was 3.4)</td><td>second print: 1 mm down in Y, 1.5 mm up in height (BOOT-to-RGB spacing is now 6.4 mm; 6.0 measured)</td></tr>
 <tr><td>Far-wall BOOT hole</td><td class="n">y 8.4</td><td class="n acc">y 10.3</td><td>second print: 1 mm up in Y</td></tr>
 <tr><td>Height</td><td class="n">12.7 mm</td><td class="n">12.7 mm (unchanged)</td><td>heights worked well</td></tr>
 </table>
-<p class="warn" style="margin:10px 0 0">Not printed yet. Screw blocks at the X ends are now 5.75 mm wide, so a small screw head is needed (the 4.4 mm counterbore leaves about 0.7 mm to the outside).
+<p class="warn" style="margin:10px 0 0">The second-print changes are not printed yet. Screw blocks at the X ends are now 5.75 mm wide, so a small screw head is needed (the 4.4 mm counterbore leaves about 0.7 mm to the outside).
 y values are in the figure frame of section 4 (box centre = 0); the printed box is drawn dashed there.</p></div>
 
 <h2>1. Measured parts</h2>
@@ -243,7 +245,7 @@ y values are in the figure frame of section 4 (box centre = 0); the printed box 
 <tr><td>Diffuser seat</td><td class="n">dia 12.0 (was 11.2, then 12.4), 1.5 deep; aperture dia 10</td><td><span class="tag">built</span></td></tr>
 <tr><td>Divider notches</td><td class="n">4 mm wide at x = +11 (battery lead), -11 (I2C cable)</td><td><span class="tag">built</span></td></tr>
 <tr><td>G42 button</td><td class="n">U-slot tongue 7 x 8.9, slot 0.8, nub at (16.2, 10.7), nub bottom z 7.5 (1.5 mm shorter)</td><td><span class="tag">estimated</span></td></tr>
-<tr><td>Power LED</td><td class="n">slit 1.6 x 3.4 (long in Y) in the lid at (13.2, 9.3) (position a guess)</td><td><span class="tag">estimated</span></td></tr>
+<tr><td>Power LED</td><td class="n">slit 1.6 x 3.4 (long in Y) in the lid at (13.2, 10.7) (position a guess)</td><td><span class="tag">estimated</span></td></tr>
 <tr><td>RGB LED (G21, side mounted)</td><td class="n">3.0 x 1.6 window in the far wall at y 16.7, z 4.9</td><td><span class="tag">estimated</span></td></tr>
 <tr><td>BOOT (G0, side mounted)</td><td class="n">dia 2.4 hole in the far wall at y 10.3, z 3.0</td><td><span class="tag">estimated</span></td></tr>
 <tr><td>Base screws</td><td class="n">4 x M2 x 8 from below</td><td><span class="tag">built</span></td></tr>

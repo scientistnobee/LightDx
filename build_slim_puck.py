@@ -115,7 +115,7 @@ cap_end_x = (cap_pl - cap_inset) / 2 - clr          # far end of the Capsule boa
 g42_y = feat_cy - 3.4                                # G42 tactile switch y (also the base-wall BOOT / RGB reference)
 btn_x, btn_y = cap_end_x - 1.8 - 2.0, g42_y + 3.0   # pusher nub: moved 2 mm toward the USB end and 2 mm toward +Y after the print (2026-10-15)
 led_w, led_l = 1.6, 3.4                            # lid LED opening: USB-C-like slit, width along X, length along Y (stadium)
-led_x, led_y = cap_end_x - 4.8 - 2.0, feat_cy - 1.8               # white-outlined chip next to the button (power LED?), y aligned with the tongue (user 2026-10-15)
+led_x, led_y = cap_end_x - 4.8 - 2.0, btn_y               # white-outlined chip next to the button (power LED?), y aligned with the tongue (user 2026-10-15)
 wall_dy = 3.0                                     # far-wall holes moved 4 mm toward +Y (print feedback 2026-10-15)
 # Side-mounted parts at the board's far edge fire through the base's far (+X) end wall (ESTIMATED z: PCB top ~2.8 mm):
 rgb_y, rgb_w, rgb_h, rgb_zc = g42_y + 6.0 + wall_dy, 3.0, 1.6, 4.9   # RGB LED (G21) window: width along y, height, centre z
