@@ -109,21 +109,21 @@ P = {k: b64_jpg(os.path.join(HERE, f)) for k, f in (("together", "all_together.j
 
 # ---------------------------------------------------------------- SVG: side stack comparison
 def stack_svg():
-    s = 26  # px per mm
-    W, H = 880, 420
-    base_y = 360
+    s = 28  # px per mm
+    W, H = 1010, 450
+    base_y = 395
     def rect(x, h, w, fill, label, ytop_offset=0, textcol="#111"):
         y = base_y - (h + ytop_offset) * s
         return (f'<rect x="{x}" y="{y:.1f}" width="{w}" height="{h * s:.1f}" fill="{fill}" stroke="#222" stroke-width="1"/>'
-                f'<text x="{x + w / 2}" y="{y + h * s / 2 + 4:.1f}" text-anchor="middle" font-size="12" fill="{textcol}">{label}</text>')
+                f'<text x="{x + w / 2}" y="{y + h * s / 2 + (4 if h * s >= 15 else 3):.1f}" text-anchor="middle" font-size="{12 if h * s >= 15 else 9}" fill="{textcol}">{label}</text>')
     def col(x0, title, parts, total, note):
-        out = [f'<text x="{x0 + 90}" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">{title}</text>']
+        out = [f'<text x="{x0 + 80}" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="currentColor">{title}</text>']
         z = 0
         for h, fill, label, tc in parts:
-            out.append(rect(x0, h, 180, fill, label, z, tc)); z += h
-        out.append(f'<line x1="{x0 + 196}" y1="{base_y}" x2="{x0 + 196}" y2="{base_y - total * s:.1f}" stroke="currentColor" stroke-width="1.2"/>')
-        out.append(f'<text x="{x0 + 204}" y="{base_y - total * s / 2:.1f}" font-size="13" fill="currentColor">{total:.1f} mm</text>')
-        out.append(f'<text x="{x0 + 90}" y="{base_y + 22}" text-anchor="middle" font-size="12" fill="currentColor">{note}</text>')
+            out.append(rect(x0, h, 160, fill, label, z, tc)); z += h
+        out.append(f'<line x1="{x0 + 170}" y1="{base_y}" x2="{x0 + 170}" y2="{base_y - total * s:.1f}" stroke="currentColor" stroke-width="1.2"/>')
+        out.append(f'<text x="{x0 + 178}" y="{base_y - total * s / 2:.1f}" font-size="13" fill="currentColor">{total:.1f} mm</text>')
+        out.append(f'<text x="{x0 + 80}" y="{base_y + 22}" text-anchor="middle" font-size="12" fill="currentColor">{note}</text>')
         return "".join(out)
     cur = [(1.2, "#8a8f98", "floor 1.2", "#111"), (6.0, "#5b86d6", "cell 6.0 (est.)", "#fff"),
            (0.5, "#fff", "gap 0.5", "#111"), (3.0, "#e0a050", "AS7341 pocket 3.0", "#111"), (2.0, "#b5bac4", "lid 2.0", "#111")]
@@ -132,9 +132,9 @@ def stack_svg():
     cap_cur = [(1.2, "#8a8f98", "floor 1.2", "#111"), (7.0, "#3fb35a", "Capsule 7.0 (est.)", "#fff"), (2.5, "#fff", "air 2.5", "#111"), (2.0, "#b5bac4", "lid 2.0", "#111")]
     cap_new = [(1.2, "#8a8f98", "floor 1.2", "#111"), (6.0, "#3fb35a", "Capsule 6.0", "#fff"), (0.3, "#fff", "clr 0.3", "#111"), (2.0, "#b5bac4", "lid 2.0", "#111")]
     parts = (col(10, "Sensor side: now", cur, 12.7, "battery + AS7341 stack") +
-             col(230, "Sensor side: measured", new, 9.0 + 1.5, "stack 7.0 + 0.3") +
-             col(450, "Capsule side: now", cap_cur, 12.2, "pocket sized to 12.7") +
-             col(670, "Capsule side: measured", cap_new, 9.5, ""))
+             col(260, "Sensor side: measured", new, 9.0 + 1.5, "stack 7.0 + 0.3") +
+             col(510, "Capsule side: now", cap_cur, 12.2, "pocket sized to 12.7") +
+             col(760, "Capsule side: measured", cap_new, 9.5, ""))
     return (f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Height stacks, current model versus measured parts" style="width:100%;height:auto">'
             f'<line x1="0" y1="{base_y}" x2="{W}" y2="{base_y}" stroke="currentColor" stroke-width="1" opacity="0.4"/>{parts}</svg>')
 
