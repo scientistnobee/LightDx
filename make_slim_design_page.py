@@ -141,11 +141,19 @@ def stack_svg():
 
 # ---------------------------------------------------------------- SVG: plan with dimensions
 from slim_plan_svg import plan_svg
+from wear_plan_svg import plan as wear_plan, lug_side
+WR = {k: b64_png(os.path.join(OUT, "fc_" + k + ".png")) for k in (
+    "v4_assembled_iso", "v4_base_open_iso", "v4_base_open_top", "v4_lid_underside",
+    "wear_slim_iso", "wear_slim_back", "wear_slim_top", "wear_slim_front",
+    "wear_v4_iso", "wear_v4_back", "wear_v4_top", "wear_v4_front")}
+PLAN_SLIM = wear_plan(40.4, 50.6, 1.85, 11.1, 9.4, 10.3, 16.7, 3.0, -12.8, title="Slim puck strap base (accepted)")
+PLAN_V4 = wear_plan(43.4, 50.0, 1.55, 10.8, 9.4, 10.0, 16.4, 3.0, -12.8, title="Normal puck v4 strap base")
+LUG = lug_side()
 
 
 HTML = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LightDx slim_puck design</title>
+<title>LightDx puck design</title>
 <style>
 :root {{ --bg:#f6f7f9; --fg:#14171c; --mut:#5a6270; --card:#fff; --line:#d9dde4; --acc:#1f5fbf; --warn:#a8570a; }}
 @media (prefers-color-scheme: dark) {{ :root {{ --bg:#14171c; --fg:#e8ebf0; --mut:#9aa3b2; --card:#1d2229; --line:#2f3743; --acc:#7fb0ff; --warn:#f0a35a; }} }}
@@ -166,10 +174,10 @@ td.n {{ font-variant-numeric:tabular-nums; white-space:nowrap; }}
 .warn {{ color:var(--warn); }} .acc {{ color:var(--acc); }}
 .scroll {{ overflow-x:auto; }}
 .chg th:nth-child(1) {{ width:17%; }} .chg th:nth-child(2), .chg th:nth-child(3) {{ width:21%; }} .chg th:nth-child(4) {{ width:41%; }}
-.chg td.n {{ white-space:normal; }}
+.chg td.n, .wrapn td.n {{ white-space:normal; }}
 </style></head><body><main>
-<h1>LightDx slim_puck</h1>
-<p class="sub">Design page, 2026-10-15 (updated with the feedback from the second print). Renders are FreeCAD views of the saved model <code>Square_puck_v2.FCStd</code> (Slim_Base, Slim_Lid); the STLs in the folder match it, and the state is committed to GitHub (tag <code>slim-puck-print2</code>). Heights are still the old estimates (12.7 mm total). Measurements are the user's caliper readings from 2026-10-15.</p>
+<h1>LightDx puck: slim, normal v4 and wearable</h1>
+<p class="sub">Design page, 2026-10-15, updated 2026-10-16: sections 6 (normal puck v4, connectors kept) and 7 (wearable strap base) are new; sections 1 to 5 describe the slim puck (second print worked well, frozen as <code>LightDx_base_v1.FCStd</code>, tag <code>base-v1</code>). Renders are FreeCAD views of the saved model <code>Square_puck_v2.FCStd</code> (Slim_Base, Slim_Lid); the STLs in the folder match it, and the state is committed to GitHub (tag <code>slim-puck-print2</code>). Heights are still the old estimates (12.7 mm total). Measurements are the user's caliper readings from 2026-10-15.</p>
 
 <h2>Changes since the first print (2026-10-15, including the second-print feedback)</h2>
 <div class="card scroll"><table class="chg">
@@ -250,7 +258,57 @@ y values are in the figure frame of section 4 (box centre = 0); the printed box 
 <tr><td>BOOT (G0, side mounted)</td><td class="n">dia 2.4 hole in the far wall at y 10.3, z 3.0</td><td><span class="tag">estimated</span></td></tr>
 <tr><td>Base screws</td><td class="n">4 x M2 x 8 from below</td><td><span class="tag">built</span></td></tr>
 </table></div>
-<p class="sub" style="margin-top:20px">Sources: <code>build_slim_puck.py</code>, <code>LEARNINGS.md</code> ("Enclosure: v3 and slim_puck"), memory note on the 2026-10-15 measurements. Regenerate this page with <code>make_slim_design_page.py</code>.</p>
+<h2>6. Normal puck v4 (connectors kept)</h2>
+<p class="sub" style="margin-bottom:8px">For the Capsule and AS7341 with their Grove / JST connectors still fitted (not desoldered). Built by <code>build_normal_puck_v4.py</code> from the slim_puck script, objects <code>V4_Base</code> and <code>V4_Lid</code>. STLs: <code>Puck_V4_Base_Strap.stl</code> (base with strap lugs) and <code>Puck_V4_Lid.stl</code>. Not printed yet.</p>
+<div class="card scroll"><table class="wrapn">
+<tr><th>Item</th><th>Slim puck (printed)</th><th>Normal puck v4</th><th>Origin</th></tr>
+<tr><td>Outline</td><td class="n">40.4 x 50.6 x 12.7 mm</td><td class="n acc">43.4 x 50.0 x 16.2 mm (base 14.2, lid 2.0)</td><td>v3 was 45.4 x 50 x 16.6</td></tr>
+<tr><td>Walls, floor, lid</td><td class="n">floor 1.2, end walls 1.0, side walls 2.0, lid 2.0</td><td class="n acc">same</td><td><span class="tag">from slim</span> printed fine</td></tr>
+<tr><td>Diffuser seat</td><td class="n">dia 12.0, 1.5 deep, 0.5 ledge, aperture dia 10</td><td class="n acc">same, no raised boss</td><td><span class="tag">from slim</span></td></tr>
+<tr><td>AS7341 retention</td><td class="n">4 lid pins, no screws</td><td class="n acc">same (pocket depth 4.6 for the JST connectors)</td><td><span class="tag">from slim</span></td></tr>
+<tr><td>Capsule pocket</td><td class="n">38.4 x 24.4, height 7</td><td class="n">41.4 x 24.4, height 13</td><td><span class="tag">kept from v3</span> (Capsule with connectors)</td></tr>
+<tr><td>Battery pocket</td><td class="n">27.9 x 21.0</td><td class="n">30.4 x 20.4</td><td><span class="tag">kept from v3</span></td></tr>
+<tr><td>Cable notches and JST slots</td><td class="n">notches x = +-11, JST slots</td><td class="n">notches x = +-14, JST slots at both ends of the AS7341</td><td><span class="tag">kept from v3</span></td></tr>
+<tr><td>Base screws</td><td class="n">M2 x 8</td><td class="n">M2 x 14 from below</td><td>base is 14.2 tall</td></tr>
+<tr><td>USB-C window</td><td class="n">9.4 x 3.8, centre z 6.9</td><td class="n">9.4 x 6.5, centre z 12.0 <span class="warn">(assumed)</span></td><td>width from slim, height and z from v3</td></tr>
+<tr><td>G42 tongue, nub, LED slit, BOOT, RGB</td><td class="n">nub (16.2, 10.7); BOOT y 10.3; RGB y 16.7</td><td class="n">nub (17.7, 10.4); BOOT y 10.0; RGB y 16.4; z as slim <span class="warn">(assumed)</span></td><td>same distances from the divider wall and 3.0 mm from the far wall; the v4 divider is 0.3 mm lower</td></tr>
+</table>
+<p class="warn" style="margin:10px 0 0">To verify in the first print: USB window height and z, nub depth (bottom z 13.5, 0.7 mm below the Capsule top), BOOT and RGB heights, and that the Capsule sits against the far wall.</p></div>
+<div class="grid" style="margin-top:14px">
+<figure class="card"><img alt="Normal puck v4 assembled with strap lugs" src="{WR['v4_assembled_iso']}"><figcaption>v4 assembled (base with lugs, lid on top), 16.2 mm tall.</figcaption></figure>
+<figure class="card"><img alt="v4 base from above with part envelopes" src="{WR['v4_base_open_top']}"><figcaption>v4 base, plan: Capsule pocket (green, top), battery + AS7341 with its two JST connectors (blue / orange, bottom), four screw posts, JST slots beside the sensor.</figcaption></figure>
+<figure class="card"><img alt="v4 base with part envelopes, isometric" src="{WR['v4_base_open_iso']}"><figcaption>v4 base with part envelopes, isometric.</figcaption></figure>
+<figure class="card"><img alt="v4 lid underside" src="{WR['v4_lid_underside']}"><figcaption>v4 lid, underside (mirrored): screw posts, AS7341 pillars with pins and the button nub, which reaches up through the 0.5 mm Capsule recess.</figcaption></figure>
+</div>
+
+<h2>7. Wearable strap base</h2>
+<p class="sub" style="margin-bottom:8px">The puck base is the wearable base: the lugs are part of the base (no glued plate, no extra height), so the base is printed with them. Lugs are on the +-X ends and take a 20 mm watch strap with a standard 1.5 mm spring bar. The final part will be metal. Objects: <code>Wear_Base_Strap</code> (slim, accepted) and <code>Wear_V4_Strap</code> (v4), from <code>build_wearable_mounts.py</code>. STL exported: <code>Wear_Base_Strap.stl</code> and <code>Puck_V4_Base_Strap.stl</code>.</p>
+<div class="card scroll"><table class="wrapn">
+<tr><th>Item</th><th>Value</th><th>Why</th></tr>
+<tr><td>Strap</td><td class="n">20 mm gap between the lug pairs, spring bar 1.5 mm, bar hole dia 1.8 through both lugs</td><td>user's strap is 20 mm (the Samsung strap, not 28 mm)</td></tr>
+<tr><td>Lugs</td><td class="n">3 mm thick (Y), 6 mm tall, sticking out 6 mm from the wall (tip centre 3 mm out, radius 3), standing on the flat back (z 0 to 6)</td><td>rounded for looks and a clean strap swing</td></tr>
+<tr><td>Strap position</td><td class="n">slim: gap centre y = 1.85 (1.85 mm off-centre); v4: y = 1.55</td><td>closest to the puck centre that keeps the lugs clear of the BOOT hole and the RGB window; exact centring would put a lug on the BOOT hole and its spring-bar seat</td></tr>
+<tr><td>Upper lug</td><td class="n">sits between the BOOT hole and the RGB window on the +X end (about 0.35 mm clear on both sides)</td><td>user accepted this</td></tr>
+<tr><td>USB-C end</td><td class="n">slim: window cut through the lug (notch above z 5); v4: window is above the lug (z 8.75 to 15.25), no notch</td><td>the lug stands in front of the window, so the strap bar is removed to plug in on the slim version</td></tr>
+<tr><td>Heights</td><td class="n">slim 12.7 mm, v4 16.2 mm (unchanged, lugs add no height); X length with lugs 52.4 (slim) / 55.4 (v4)</td><td>lugs are at the same level as the base</td></tr>
+<tr><td>Back face</td><td class="n">flat, four counterbored base-screw holes (screw heads sit recessed 2.2 mm)</td><td>diffuser and lid face outward, the flat back goes against the body</td></tr>
+</table>
+<p class="warn" style="margin:10px 0 0">Not yet decided or built: the pocket-clip variant (<code>Wear_Base_Clip</code>, hidden, not exported; an arm on the back adds about 3 mm) and metal manufacturing details. Not printed or fitted yet.</p></div>
+<figure class="card" style="margin-top:14px">{PLAN_SLIM}<figcaption>Slim strap base, plan. Red = USB-C window (-X wall), blue = BOOT hole, purple = RGB window (+X wall), blue rectangles = lugs (6 mm out from the wall).</figcaption></figure>
+<figure class="card" style="margin-top:14px">{PLAN_V4}<figcaption>v4 strap base, plan: same layout, 3 mm longer (X) and 0.6 mm less wide (Y); features sit 0.3 mm lower in Y.</figcaption></figure>
+<figure class="card" style="margin-top:14px;max-width:640px">{LUG}<figcaption>One lug in side view. The bar hole runs along Y through both lugs of a pair.</figcaption></figure>
+<div class="grid" style="margin-top:14px">
+<figure class="card"><img alt="Slim strap base assembled, isometric" src="{WR['wear_slim_iso']}"><figcaption>Slim strap base with lid, isometric.</figcaption></figure>
+<figure class="card"><img alt="Slim strap base seen from the back" src="{WR['wear_slim_back']}"><figcaption>Slim strap base, back (seen from below, mirrored): flat face, four screw counterbores, lug pairs at y = -11.15 to -8.15 and 11.85 to 14.85.</figcaption></figure>
+<figure class="card"><img alt="Slim strap base from above" src="{WR['wear_slim_top']}"><figcaption>Slim strap base, top view with lid.</figcaption></figure>
+<figure class="card"><img alt="Slim strap base from the front" src="{WR['wear_slim_front']}"><figcaption>Slim strap base from the front: round lug tips with the bar holes.</figcaption></figure>
+<figure class="card"><img alt="v4 strap base assembled, isometric" src="{WR['wear_v4_iso']}"><figcaption>v4 strap base with lid, isometric.</figcaption></figure>
+<figure class="card"><img alt="v4 strap base seen from the back" src="{WR['wear_v4_back']}"><figcaption>v4 strap base, back (mirrored).</figcaption></figure>
+<figure class="card"><img alt="v4 strap base from above" src="{WR['wear_v4_top']}"><figcaption>v4 strap base, top view with lid.</figcaption></figure>
+<figure class="card"><img alt="v4 strap base from the front" src="{WR['wear_v4_front']}"><figcaption>v4 strap base from the front.</figcaption></figure>
+</div>
+
+<p class="sub" style="margin-top:20px">Sources: <code>build_slim_puck.py</code>, <code>build_normal_puck_v4.py</code>, <code>build_wearable_mounts.py</code>, <code>LEARNINGS.md</code> ("Enclosure: v3 and slim_puck"), memory note on the 2026-10-15 measurements. Regenerate this page with <code>make_slim_design_page.py</code>.</p>
 </main></body></html>
 """
 open(os.path.join(HERE, "LightDx_slim_puck_design.html"), "w", encoding="utf-8").write(HTML)
