@@ -30,7 +30,7 @@ def _lug(sx, yc_gap, side):
     return box.fuse(cyl)
 
 
-def strap_base(base):
+def strap_base(base, usb_notch=True):
     s = base
     for sx in (1, -1):
         for side in (1, -1):
@@ -39,8 +39,9 @@ def strap_base(base):
         hole = Part.makeCylinder(BAR_D / 2, STRAP + 2 * LUG_T + 2, V(xc, GAP_Y - STRAP / 2 - LUG_T - 1, LUG_H / 2), V(0, 1, 0))
         s = s.cut(hole)
     # keep the USB-C window (-X wall, y 6.4..15.8, z 5.0..8.8) open through the lug that stands in front of it
-    usb = Part.makeBox(8.0, 9.4, 3.8, V(-L / 2 - 6.8, 11.1 - 4.7, 5.0))
-    s = s.cut(usb)
+    if usb_notch:
+        usb = Part.makeBox(8.0, 9.4, 3.8, V(-L / 2 - 6.8, 11.1 - 4.7, 5.0))
+        s = s.cut(usb)
     return s.removeSplitter()
 
 
@@ -70,3 +71,18 @@ def build_and_apply(docname="Square_puck_v2"):
     doc.getObject("Slim_Base").ViewObject.Visibility = False
     doc.recompute()
     return doc
+
+
+def build_v4(docname="Square_puck_v2"):
+    """Strap lugs on the normal puck v4 base (V4_Base, 43.4 x 50.0). v4 features sit 0.3 mm lower in Y than the slim
+    (divider wall at y -1.4 instead of -1.1), so the strap gap centre moves from 1.85 to 1.55. The v4 USB window is
+    above the lug (z 8.75..15.25), so no notch is cut."""
+    global L, W, GAP_Y
+    L, W, GAP_Y = 43.4, 50.0, 1.55
+    doc = App.getDocument(docname)
+    o = doc.getObject("Wear_V4_Strap") or doc.addObject("Part::Feature", "Wear_V4_Strap")
+    o.Shape = strap_base(doc.getObject("V4_Base").Shape, usb_notch=False)
+    o.ViewObject.ShapeColor = (0.25, 0.45, 0.8)
+    doc.getObject("V4_Base").ViewObject.Visibility = False
+    doc.recompute()
+    return o
