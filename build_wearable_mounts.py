@@ -1,7 +1,7 @@
 """Wearable bases for the LightDx slim puck. The puck base itself is the wearable base: lugs / clip arm are fused
 directly into a copy of Slim_Base (no glued plate, no extra height). LightDx_base_v1.FCStd stays untouched.
 Frame: same as build_slim_puck.py (X right, USB end -X, origin box centre in XY, base back at z = 0, lid on top).
-  Wear_Base_Strap : Slim_Base + two rounded lug pairs on the +-Y ends (20 mm strap gap, 1.5 mm spring bar).
+  Wear_Base_Strap : Slim_Base + two rounded lug pairs on the +-X ends (20 mm strap gap centred at y = GAP_Y, 1.5 mm spring bar).
   Wear_Base_Clip  : Slim_Base + flexible pocket-clip arm on the back (hidden variant).
 No STL export from here (user: export only when asked)."""
 import FreeCAD as App
@@ -13,28 +13,30 @@ LUG_T = 3.0                         # lug thickness (X)
 LUG_H = 6.0                         # lug height (z 0..6), tip radius = LUG_H / 2
 LUG_OUT = LUG_H / 2                 # tip centre sits this far beyond the box edge (Y)
 BAR_D = 1.8                         # spring-bar hole dia (bar 1.5, tip ~1.0)
+GAP_Y = -7.0                        # strap gap centre in Y: keeps lugs clear of the USB / BOOT / RGB windows (y > 6)
 ROOT_IN = 1.0                       # lug root reaches this far into the 2 mm side wall
 V = App.Vector
 
 
-def _lug(sx, sy):
-    x0 = STRAP / 2 if sx > 0 else -STRAP / 2 - LUG_T
+def _lug(sx, yc_gap, side):
+    """Lug on the +-X end (sx = +1/-1); side = +1/-1 puts it on the +Y/-Y side of the strap gap centre."""
+    y0 = yc_gap + STRAP / 2 if side > 0 else yc_gap - STRAP / 2 - LUG_T
     r = LUG_H / 2
-    yc = sy * (W / 2 + LUG_OUT)
-    y_root = sy * (W / 2 - ROOT_IN)
-    ylo, yhi = sorted((y_root, yc))
-    box = Part.makeBox(LUG_T, yhi - ylo, LUG_H, V(x0, ylo, 0))
-    cyl = Part.makeCylinder(r, LUG_T, V(x0, yc, r), V(1, 0, 0))
+    xc = sx * (L / 2 + LUG_OUT)
+    x_root = sx * (L / 2 - ROOT_IN)
+    xlo, xhi = sorted((x_root, xc))
+    box = Part.makeBox(xhi - xlo, LUG_T, LUG_H, V(xlo, y0, 0))
+    cyl = Part.makeCylinder(r, LUG_T, V(xc, y0, r), V(0, 1, 0))
     return box.fuse(cyl)
 
 
 def strap_base(base):
     s = base
-    for sy in (1, -1):
-        for sx in (1, -1):
-            s = s.fuse(_lug(sx, sy))
-        yc = sy * (W / 2 + LUG_OUT)
-        hole = Part.makeCylinder(BAR_D / 2, STRAP + 2 * LUG_T + 2, V(-STRAP / 2 - LUG_T - 1, yc, LUG_H / 2), V(1, 0, 0))
+    for sx in (1, -1):
+        for side in (1, -1):
+            s = s.fuse(_lug(sx, GAP_Y, side))
+        xc = sx * (L / 2 + LUG_OUT)
+        hole = Part.makeCylinder(BAR_D / 2, STRAP + 2 * LUG_T + 2, V(xc, GAP_Y - STRAP / 2 - LUG_T - 1, LUG_H / 2), V(0, 1, 0))
         s = s.cut(hole)
     return s.removeSplitter()
 
