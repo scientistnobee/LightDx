@@ -13,7 +13,7 @@ LUG_T = 3.0                         # lug thickness (X)
 LUG_H = 6.0                         # lug height (z 0..6), tip radius = LUG_H / 2
 LUG_OUT = LUG_H / 2                 # tip centre sits this far beyond the box edge (Y)
 BAR_D = 1.8                         # spring-bar hole dia (bar 1.5, tip ~1.0)
-GAP_Y = -7.0                        # strap gap centre in Y: keeps lugs clear of the USB / BOOT / RGB windows (y > 6)
+GAP_Y = 1.85                        # strap gap centre in Y: upper lug (y 11.85..14.85) sits between BOOT (to 11.5) and RGB (from 15.2); blocks USB-C plug, so remove strap to charge
 ROOT_IN = 1.0                       # lug root reaches this far into the 2 mm side wall
 V = App.Vector
 
