@@ -38,6 +38,9 @@ def strap_base(base):
         xc = sx * (L / 2 + LUG_OUT)
         hole = Part.makeCylinder(BAR_D / 2, STRAP + 2 * LUG_T + 2, V(xc, GAP_Y - STRAP / 2 - LUG_T - 1, LUG_H / 2), V(0, 1, 0))
         s = s.cut(hole)
+    # keep the USB-C window (-X wall, y 6.4..15.8, z 5.0..8.8) open through the lug that stands in front of it
+    usb = Part.makeBox(8.0, 9.4, 3.8, V(-L / 2 - 6.8, 11.1 - 4.7, 5.0))
+    s = s.cut(usb)
     return s.removeSplitter()
 
 
